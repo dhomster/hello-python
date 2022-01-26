@@ -29,7 +29,6 @@ spec:
       containers:
       - name: hello-python
         image: dkhomenchuk/hello-python:latest
-        imagePullPolicy: Never
         ports:
         - containerPort: 8000
 
@@ -40,13 +39,20 @@ metadata:
   name: hello-ingress
   annotations:
     kubernetes.io/ingress.class: "nginx"
-    nginx.ingress.kubernetes.io/rewrite-target: /$1
+    nginx.ingress.kubernetes.io/rewrite-target: $1
 spec:
   rules:
   - host: arch.homework
     http:
       paths:
         - path: /(.*)
+          pathType: Prefix
+          backend:
+            service:
+              name: hello-python-service
+              port:
+                number: 8000
+        - path: /otusapp/dkhomenchuk/(.*)
           pathType: Prefix
           backend:
             service:
